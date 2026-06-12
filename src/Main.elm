@@ -1,32 +1,40 @@
 module Main exposing (main)
 
-import Http
+import Builder.Generate
+import Extra.Platform
+import Extra.System.IO as IO exposing (IO)
+import Terminal.Main
+
+
+main : Program Flags Model Msg
+main =
+    Platform.worker
+        { init = IO.init initialModel initialIO
+        , subscriptions = \_ -> Sub.none
+        , update = IO.update
+        }
 
 
 type alias Flags =
-    { serverPort : Int
-    , cwd : String
-    }
+    Extra.Platform.Flags
 
 
-main : Program Flags () ()
-main =
-    Platform.worker
-        { init = init
-        , update = \_ _ -> ( (), Cmd.none )
-        , subscriptions = \_ -> Sub.none
-        }
+type alias Model =
+    Builder.Generate.GlobalState ()
 
 
-init : Flags -> ( (), Cmd () )
-init flags =
-    ( (), send flags.serverPort <| "\nWelcome to Elmie!\n\nStarted from " ++ flags.cwd ++ "\n\n" )
+initialModel : Flags -> Model
+initialModel flags =
+    Builder.Generate.toGlobalState flags ()
 
 
-send : Int -> String -> Cmd ()
-send serverPort message =
-    Http.post
-        { url = "http://localhost:" ++ String.fromInt serverPort
-        , body = Http.stringBody "text/plain" message
-        , expect = Http.expectWhatever (always ())
-        }
+type alias Msg =
+    IO Model ()
+
+
+initialIO : Flags -> Msg
+initialIO _ =
+    IO.sequence
+        [ Terminal.Main.runMain
+        , Extra.Platform.exitSuccess
+        ]

@@ -26,9 +26,9 @@ module Extra.Platform exposing
     )
 
 import Bytes exposing (Bytes)
+import Extra.Platform.Cli as Internal
 import Extra.System.Path exposing (FilePath)
 import Extra.Type.List exposing (TList)
-import Test.Platform as Internal
 import Time
 
 

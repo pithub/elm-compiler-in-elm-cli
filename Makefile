@@ -3,7 +3,7 @@ SHELL := /bin/sh
 ELM := elm
 ELMIE := ./elmie
 
-SOURCES := $(shell find src -type f -name '*.elm')
+SOURCES := $(shell find src compiler/src -type f -name '*.elm')
 MAIN := src/Main.elm
 OUTPUT := elm.js
 
